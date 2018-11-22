@@ -15,7 +15,10 @@ def predict(x_test, model_type):
 
     clf_list = joblib.load('./sk_model/' + model_type + '_clf_list.pkl')
     chains_order_list = joblib.load('./sk_model/' + model_type + '_chains_order_list.pkl')
-    label_dim = len(clf_list)
+    if model_type == 'ECC':
+        label_dim = len(clf_list[0])
+    else:
+        label_dim = len(clf_list)
     y = np.zeros((x_test.shape[0], label_dim))
     prob = np.zeros((x_test.shape[0], label_dim))
 
@@ -36,15 +39,16 @@ def predict(x_test, model_type):
 
     if model_type == 'ECC':
         number_of_chains = len(chains_order_list)
+        y_ensemble = np.zeros((number_of_chains, x_test.shape[0], label_dim))
         for i in  range(number_of_chains):
             chains_order = chains_order_list[i]
-            for j in chains_order:
-                y[:, j] = y[:, j] + clf_list[i][j].predict(x_test)
-                x_test = np.c_[x_test, y[:, j]]
+            for j in range(len(chains_order)):
+                y_ensemble[i, :, chains_order[j]] = clf_list[i][j].predict(x_test)
+                x_test = np.c_[x_test, y_ensemble[i, :, chains_order[j]]]
             # end for
         #end for
-        y = np.around(y)
-        prob = y / number_of_chains
+        y = np.around(np.mean(y_ensemble, axis=0))
+        prob = np.mean(y_ensemble, axis=0)
         return y, prob
 
 def load_data(dataset_name):
@@ -58,7 +62,7 @@ def load_data(dataset_name):
 if __name__ == '__main__':
     dataset_names = ['yeast', 'delicious']
     dataset_name = dataset_names[0]
-    model_type = 'BR'
+    model_type = 'ECC'
     _, _, x_test, y_test = load_data(dataset_name)
     pred, pred_prob = predict(x_test, model_type)
 

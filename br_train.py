@@ -47,16 +47,16 @@ def train(x_train, y_train, model_type):
     if model_type == 'ECC':
         number_of_chains = 10
         subset_proportion = 0.5
-        clf_list_i = []
         chains_order_list = []
         for i in  range(number_of_chains):
+            clf_list_i = []
             chains_order = random.sample(range(label_dim), label_dim)
             chains_order_list.append(chains_order)
-            idx = random.sample(data_num, int(data_num*subset_proportion))
-            for j in range(label_dim):
+            idx = random.sample(range(data_num), int(data_num*subset_proportion))
+            for j in chains_order:
                 clf = SVC(kernel='rbf', probability=True)
-                clf.fit(x_train, y_train[:, chains_order[j]].ravel())
-                x_train = np.c_[x_train, y_train[:, chains_order[j]]]
+                clf.fit(x_train, y_train[:, j].ravel())
+                x_train = np.c_[x_train, y_train[:, j]]
                 clf_list_i.append(clf)
             # end for
             clf_list.append(clf_list_i)
@@ -77,6 +77,6 @@ def load_data(dataset_name):
 if __name__ == '__main__':
     dataset_names = ['yeast','delicious']
     dataset_name = dataset_names[0]
-    model_type = 'BR'
+    model_type = 'ECC'
     x_train, y_train, _, _ = load_data(dataset_name)
     train(x_train, y_train, model_type)
