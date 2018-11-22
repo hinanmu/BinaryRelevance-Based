@@ -3,15 +3,18 @@
 # @FileName: br_test.py
 import numpy as np
 import tensorflow as tf
+import evaluate_model
+import random
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.svm import SVC
 from sklearn.externals import joblib
-import evaluate_model
+
 
 def predict(x_test, model_type):
 
     clf_list = joblib.load('./sk_model/' + model_type + '_clf_list.pkl')
+    chains_order_list = joblib.load('./sk_model/' + model_type + '_chains_order_list.pkl')
     label_dim = len(clf_list)
     y = np.zeros((x_test.shape[0], label_dim))
     prob = np.zeros((x_test.shape[0], label_dim))
@@ -29,6 +32,19 @@ def predict(x_test, model_type):
             prob[:, i] = clf_list[i].predict_proba(x_test)[:, 1]
             x_test = np.c_[x_test, y[:, i]]
 
+        return y, prob
+
+    if model_type == 'ECC':
+        number_of_chains = len(chains_order_list)
+        for i in  range(number_of_chains):
+            chains_order = chains_order_list[i]
+            for j in chains_order:
+                y[:, j] = y[:, j] + clf_list[i][j].predict(x_test)
+                x_test = np.c_[x_test, y[:, j]]
+            # end for
+        #end for
+        y = np.around(y)
+        prob = y / number_of_chains
         return y, prob
 
 def load_data(dataset_name):

@@ -3,11 +3,13 @@
 # @FileName: br_train.py
 import numpy as np
 import tensorflow as tf
+import evaluate_model
+import random
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
 from sklearn.svm import SVC
 from sklearn.externals import joblib
-import evaluate_model
+
 
 def train(x_train, y_train, model_type):
     data_num = x_train.shape[0]
@@ -21,7 +23,6 @@ def train(x_train, y_train, model_type):
             clf.fit(x_train, y_train[:,i].ravel())
             clf_list.append(clf)
         #end for
-
         joblib.dump(clf_list, './sk_model/' + model_type + '_clf_list.pkl')
 
     if model_type == 'CC':
@@ -32,8 +33,38 @@ def train(x_train, y_train, model_type):
             x_train = np.c_[x_train, pred]
             clf_list.append(clf)
         #end for
-
         joblib.dump(clf_list, './sk_model/' + model_type + '_clf_list.pkl')
+
+    if model_type == 'CC':
+        for i in range(label_dim):
+            clf = SVC(kernel='rbf', probability=True)
+            clf.fit(x_train, y_train[:,i].ravel())
+            x_train = np.c_[x_train, y_train[:,i]]
+            clf_list.append(clf)
+        #end for
+        joblib.dump(clf_list, './sk_model/' + model_type + '_clf_list.pkl')
+
+    if model_type == 'ECC':
+        number_of_chains = 10
+        subset_proportion = 0.5
+        clf_list_i = []
+        chains_order_list = []
+        for i in  range(number_of_chains):
+            chains_order = random.sample(range(label_dim), label_dim)
+            chains_order_list.append(chains_order)
+            idx = random.sample(data_num, int(data_num*subset_proportion))
+            for j in range(label_dim):
+                clf = SVC(kernel='rbf', probability=True)
+                clf.fit(x_train, y_train[:, chains_order[j]].ravel())
+                x_train = np.c_[x_train, y_train[:, chains_order[j]]]
+                clf_list_i.append(clf)
+            # end for
+            clf_list.append(clf_list_i)
+        #end for
+        joblib.dump(clf_list, './sk_model/' + model_type + '_clf_list.pkl')
+        joblib.dump(chains_order_list, './sk_model/' + model_type + '_chains_order_list.pkl')
+
+
 
 def load_data(dataset_name):
     x_train = np.load('./dataset/' + dataset_name + '/x_train.npy')
