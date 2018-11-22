@@ -10,15 +10,18 @@
 ## Evaluation
 |evaluation criterion |BR | CC|ECC|
 | ------ | ------ | -----|---|
-| hamming loss|  0.2268266085059978 | 0.2268266085059978 | |
-| ranking loss|  0.16849462724050177 |0.16860606695590194  | |
-| one error| 0.24532453245324531 | 0.25192519251925194| |
+| hamming loss|  0.2268266085059978 | 0.2268266085059978 |0.23298021498675806 |
+| ranking loss|  0.16849462724050177 |0.16860606695590194  |0.045019261908574866 |
+| one error| 0.24532453245324531 | 0.25192519251925194| 0.24972737186477645|
 
 ## Requrements
 - Python 3.6
 - numpy 1.13.3
 - scikit-learn 0.19.1
 
+## Parameter
+- ECC algorithm chain number:10
+- ECC algorithm subset proportion:0.5
 
 ## Reference
 [Jesse Read·Bernhard Pfahringer·Geoff Holmes·Eibe Frank, “Classifier chains for multi-label classification,” Machine Learning, vol. 85, no. 3, pp. 333–359, 2011][2]
