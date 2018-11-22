@@ -1,4 +1,4 @@
-﻿# NN-Based
+﻿# BinaryRelevance
 ## Dataset
 [http://mulan.sourceforge.net/datasets-mlc.html][1]
 
