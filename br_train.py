@@ -46,7 +46,7 @@ def train(x_train, y_train, model_type):
 
     if model_type == 'ECC':
         number_of_chains = 10
-        subset_proportion = 0.5
+        subset_proportion = 0.75
         chains_order_list = []
         for i in  range(number_of_chains):
             clf_list_i = []

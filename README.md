@@ -21,7 +21,7 @@
 
 ## Parameter
 - ECC algorithm chain number:10
-- ECC algorithm subset proportion:0.5
+- ECC algorithm subset proportion:0.75
 
 ## Reference
 [Jesse Read·Bernhard Pfahringer·Geoff Holmes·Eibe Frank, “Classifier chains for multi-label classification,” Machine Learning, vol. 85, no. 3, pp. 333–359, 2011][2]
